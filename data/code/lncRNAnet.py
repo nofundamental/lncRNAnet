@@ -14,7 +14,7 @@ from Bio.Seq import Seq
 import numpy as np
 
 #usr
-from kerastools import preprocessing
+import preprocessing
 #####################################################################################
 #preference
 sys.setrecursionlimit(100000)
