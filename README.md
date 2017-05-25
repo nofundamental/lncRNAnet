@@ -2,6 +2,7 @@
 ### DEPENDENCIES
 [REQUIRED DEPENDENCIES]
 The required dependencies are: 1)keras, 2) theano, 3) biopython
+
 To install the dependencies, type the following command:
 ```
 $ sudo pip install --upgrade keras theano biopython
