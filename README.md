@@ -5,7 +5,7 @@ The required dependencies are: 1)keras, 2) theano, 3) biopython 4) h5py
 
 To install the dependencies, type the following command:
 ```
-$ sudo pip install --upgrade keras theano biopython h5py
+$ sudo pip3 install --upgrade keras theano biopython h5py
 ```
 ### INPUTS
 Fasta file
