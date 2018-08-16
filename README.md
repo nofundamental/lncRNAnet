@@ -10,7 +10,7 @@ $ sudo pip3 install --upgrade -r requirements.txt
 ```
 [PREREQUISITES]
 
-Modify the keras configure file ('keras.json') as below:
+Modify "image_data_format", "backend" from the keras configure file ('keras.json') as below:
 
 The default keras configure file is at '~/.keras/keras.json'
 
