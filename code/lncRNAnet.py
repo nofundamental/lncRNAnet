@@ -200,7 +200,7 @@ def predict(infile,outfile):
         g.write(ids[i]+'\t'+str(len(seqs[i]))+'\t'+str(Y_predicted[i,1]-Y_predicted[i,0])+'\n')
     
     g.close()
-    
+    print("Prediction complete: total", str(len(Y_predicted)), " sequences")
     return Y_predicted
 
 def nn():
@@ -219,7 +219,7 @@ def nn():
     orf_in=Masking()(orf_input)
     rnn_in=Masking()(rnn_input)
     
-    orf_in=RNN(hidden//orfdratio,return_sequences=True,consume_less='gpu')(orf_in)
+    orf_in=RNN(hidden,return_sequences=True,consume_less='gpu')(orf_in)
     rnn_in=RNN(hidden,return_sequences=True,consume_less='gpu')(rnn_in)
         
     rnn_in=merge([orf_in,rnn_in],mode='concat')
@@ -233,16 +233,16 @@ def nn():
     model=Model(input=[rnn_input,orf_input],output=rnn_act)
     
     model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
-    model.summary()
+    #model.summary()
     
     return model
 
-stopmodel=load_model('../data/model/stopfinder_singleframe.h5')
+stopmodel=load_model('./data/model/stopfinder_singleframe.h5')
 model=nn()
-model.load_weights('../data/model/lncRNAnet.h5')
+model.load_weights('./data/model/lncRNAnet.h5')
 
 def main():
-        option=sys.argv
+        options=sys.argv
         inputf=options[-2]
         outputf=options[-1]
         Y_p=predict(inputf,outputf)
