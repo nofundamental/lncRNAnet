@@ -22,9 +22,6 @@ The default keras configure file is at '~/.keras/keras.json'
     "floatx": "float32"
 }
 ```
-
-
-```
 ### INPUTS
 Fasta file
 
