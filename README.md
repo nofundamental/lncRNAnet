@@ -29,5 +29,4 @@ Fasta file
 ### USAGE
 ```
 $ ./code/lncRNAnet.py input.fasta output.txt
-
 ```
