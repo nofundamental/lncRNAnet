@@ -166,7 +166,7 @@ def readfile(filename):
     
     for s in sl:
         id=s.id
-        seq=str(s.seq)
+        seq=str(s.seq).upper()
         ids.append(id)
         seqs.append(seq)
     
