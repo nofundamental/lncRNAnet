@@ -191,13 +191,13 @@ def predict(infile,outfile):
     X=seqtodata(seqs)
     Y_predicted=np.empty([0,2])
     X_b,tot_index=predict_splitter(X,batch_size)
-    if X_b[0][0].shape[2] == 3:
-        zeros_col = np.zeros((X_b[0][0].shape[0],X_b[0][0].shape[1],1))
-        X_b[0][0] = np.concatenate((X_b[0][0],zeros_col),axis=2)
-    if X_b[0][1].shape[2] == 1:
-        col = np.abs(X_b[0][1]-1)
-        X_b[0][1] = np.concatenate((X_b[0][1],col),axis=2)
     for i in range(len(X_b)):
+        if X_b[i][0].shape[2] == 3:
+            zeros_col = np.zeros((X_b[i][0].shape[0],X_b[i][0].shape[1],1))
+            X_b[i][0] = np.concatenate((X_b[i][0],zeros_col),axis=2)
+        if X_b[i][1].shape[2] == 1:
+            col = np.abs(X_b[i][1]-1)
+            X_b[i][1] = np.concatenate((X_b[i][1],col),axis=2)
         Y_predicted=np.concatenate([Y_predicted,model.predict(X_b[i],batch_size=1024)],axis=0)
     
     Y_predicted=Y_predicted[np.argsort(tot_index)]
