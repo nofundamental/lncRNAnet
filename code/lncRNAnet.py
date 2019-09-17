@@ -25,7 +25,7 @@ inD=len(chars)-1
 outD=2
 #hyperparameters
 dropout=0.5
-height=2         
+height=2
 hidden=100
 orfref=10000
 orfD=2
@@ -43,6 +43,9 @@ def findORF(seq):
     seq=preprocessing.pad_sequences(seq,maxlen=length,padding='post')
     seq=(np.arange(seq.max()+1) == seq[:,:,None]).astype(dtype='float32')
     seq=np.delete(seq,0,axis=-1)
+    if seq.shape[2]==3:
+        zeros_col = np.zeros((seq.shape[0],seq.shape[1],1))
+        seq = np.concatenate((seq,zeros_col),axis=2)
     for frame in range(3):
         tseq=stopmodel.predict(seq[:,frame:])[:,:(length-frame)//3]
         tseq=np.argmax(tseq,axis=-1)-1
@@ -188,7 +191,13 @@ def predict(infile,outfile):
     X=seqtodata(seqs)
     Y_predicted=np.empty([0,2])
     X_b,tot_index=predict_splitter(X,batch_size)
-    
+    if X_b[0][0].shape[2] == 3:
+        zeros_col = np.zeros((X_b[0][0].shape[0],X_b[0][0].shape[1],1))
+        X_b[0][0] = np.concatenate((X_b[0][0],zeros_col),axis=2)
+    if X_b[0][1].shape[2] == 1:
+        col = np.abs(X_b[0][1]-1)
+        X_b[0][1] = np.concatenate((X_b[0][1],col),axis=2)
+    print(X_b[0][1])
     for i in range(len(X_b)):
         Y_predicted=np.concatenate([Y_predicted,model.predict(X_b[i],batch_size=1024)],axis=0)
     
