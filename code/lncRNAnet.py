@@ -197,7 +197,6 @@ def predict(infile,outfile):
     if X_b[0][1].shape[2] == 1:
         col = np.abs(X_b[0][1]-1)
         X_b[0][1] = np.concatenate((X_b[0][1],col),axis=2)
-    print(X_b[0][1])
     for i in range(len(X_b)):
         Y_predicted=np.concatenate([Y_predicted,model.predict(X_b[i],batch_size=1024)],axis=0)
     
