@@ -8,6 +8,7 @@ from keras import backend as K
 from keras.preprocessing.sequence import pad_sequences
 from keras.models import Sequential, Model, load_model
 from keras.layers import LSTM, Dropout, Dense, Input, Activation, Masking, merge, Lambda, TimeDistributed, Flatten
+from keras.layers import dot, concatenate
 #etc
 from Bio import SeqIO
 from Bio.Seq import Seq
@@ -214,7 +215,8 @@ def nn():
     orf_size=Lambda(lambda x: K.expand_dims(K.sum(x,axis=-2)[:,0]/orfref,axis=-1), output_shape=lambda  s: (s[0],1))(orf_input)#.repeat(1)
     orf_ratio=Lambda(lambda x: K.sum(x,axis=-1),output_shape=lambda s: (s[0],s[1]))(rnn_input)
     orf_ratio=Lambda(lambda x: orfref/(K.sum(x,axis=-1,keepdims=True)+1),output_shape=lambda s: (s[0],1))(orf_ratio)
-    orf_ratio=merge([orf_size,orf_ratio],mode='dot')
+    # orf_ratio=merge([orf_size,orf_ratio],mode='dot')
+    orf_ratio=dot([orf_size,orf_ratio], axes=1)
         
     orf_in=Masking()(orf_input)
     rnn_in=Masking()(rnn_input)
@@ -222,11 +224,13 @@ def nn():
     orf_in=RNN(hidden,return_sequences=True,consume_less='gpu')(orf_in)
     rnn_in=RNN(hidden,return_sequences=True,consume_less='gpu')(rnn_in)
         
-    rnn_in=merge([orf_in,rnn_in],mode='concat')
+    # rnn_in=merge([orf_in,rnn_in],mode='concat')
+    rnn_in=concatenate([orf_in,rnn_in])
     rnn_in=RNN(hidden,return_sequences=False,consume_less='gpu') (rnn_in)
     rnn_in=Dropout(dropout)(rnn_in)
         
-    rnn_in=merge([rnn_in,orf_size,orf_ratio],mode='concat')
+    # rnn_in=merge([rnn_in,orf_size,orf_ratio],mode='concat')
+    rnn_in=concatenate([rnn_in,orf_size,orf_ratio])
     rnn_out=Dense(outD)(rnn_in)
     rnn_act=Activation('softmax')(rnn_out)
     
