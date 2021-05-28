@@ -4,6 +4,7 @@ from random import shuffle
 from math import ceil
 
 #keras
+#import keras
 from keras import backend as K
 from keras.preprocessing.sequence import pad_sequences
 from keras.models import Sequential, Model, load_model
@@ -259,4 +260,3 @@ def main():
 
 if __name__=="__main__":
     main()
-
