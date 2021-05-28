@@ -239,7 +239,7 @@ def nn():
     rnn_act=Activation('softmax')(rnn_out)
     
     # model=Model(input=[rnn_input,orf_input],output=rnn_act)
-    model=Model(inputs=[/input_1,..., outputs=Softmax.0)
+    model=Model(inputs=[rnn_input,orf_input],outputs=rnn_act)
     
     model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
     #model.summary()
