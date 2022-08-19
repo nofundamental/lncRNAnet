@@ -1,0 +1,17 @@
+name: lncRNAnet
+channels:
+  - defaults
+dependencies:
+  # - cudatoolkit
+  # - cudnn
+  # - mkl-service
+  - python=3.6.9
+  - pip
+  - pip:
+    - theano==0.9.0
+    - keras==2.0.2
+    - numpy==1.19.5
+    - six==1.11.0
+    - biopython==1.72
+    - h5py==2.8.0
+    - git+https://www.github.com/keras-team/keras-contrib.git
