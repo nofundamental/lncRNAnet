@@ -43,7 +43,8 @@ def findORF(seq):
     length=len(seq)
     seq=[seq]
     seq=preprocessing.pad_sequences(seq,maxlen=length,padding='post')
-    seq=(np.arange(seq.max()+1) == seq[:,:,None]).astype(dtype='float32')
+    #seq=(np.arange(seq.max()+1) == seq[:,:,None]).astype(dtype='float32')
+    seq=(np.arange(5) == seq[:,:,None]).astype(dtype='float32')
     seq=np.delete(seq,0,axis=-1)
     for frame in range(3):
         tseq=stopmodel.predict(seq[:,frame:])[:,:(length-frame)//3]
@@ -199,7 +200,20 @@ def predict(infile,outfile):
     g=open(outfile,'w')
     
     for i in range(numseq):
-        g.write(ids[i]+'\t'+str(len(seqs[i]))+'\t'+str(Y_predicted[i,1]-Y_predicted[i,0])+'\n')
+        try:
+            g.write(ids[i]+'\t'+str(len(seqs[i]))+'\t'+str(Y_predicted[i,1]-Y_predicted[i,0])+'\n')
+        except:
+            print("Error in index:" + str(i))
+            print("lenght")
+            print(len(ids))
+            print(len(seqs))
+            print(Y_predicted.shape)
+            print(Y_predicted)
+            
+            print(type(ids[i]))
+            print(type(seqs[i]))
+            print(type(Y_predicted[i,1]))
+            print(type(Y_predicted[i,0]))
     
     g.close()
     print("Prediction complete: total", str(len(Y_predicted)), " sequences")
