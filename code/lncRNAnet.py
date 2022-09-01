@@ -27,13 +27,13 @@ inD=len(chars)-1
 outD=2
 #hyperparameters
 dropout=0.5
-height=2         
+height=2
 hidden=100
 orfref=10000
 orfD=2
 batch_size=128
 clen=10000
-_buckets=[500*i for i in range(1,201)]
+_buckets=[500*i for i in range(1,701)]
 
 def findORF(seq):
     orflen=0
@@ -74,7 +74,7 @@ def batchfindORF(seqs):
         orf=np.concatenate([2*np.ones(o_s),orf,2*np.ones(length-o_e)],axis=0)
         batches.append(orf)
     
-    batches=np.array(batches)
+    batches=np.array(batches,dtype=object)
     return batches
 
 def bucket_generator_ORF(X,Y,batchsize):
@@ -169,7 +169,7 @@ def readfile(filename):
     
     for s in sl:
         id=s.id
-        seq=str(s.seq)
+        seq=str(s.seq).upper()
         ids.append(id)
         seqs.append(seq)
     
@@ -180,7 +180,7 @@ def seqtodata(seqs):
     for seq in seqs:
         X.append(ctable.encode(seq))
     
-    X=np.array(X)
+    X=np.array(X,dtype=object)
     return X
 
 ctable = preprocessing.CharacterTable(chars)
