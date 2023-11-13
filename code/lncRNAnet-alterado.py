@@ -27,13 +27,13 @@ inD=len(chars)-1
 outD=2
 #hyperparameters
 dropout=0.5
-height=2
+height=2         
 hidden=100
 orfref=10000
 orfD=2
 batch_size=128
 clen=10000
-_buckets=[500*i for i in range(1,701)]
+_buckets=[500*i for i in range(1,201)]
 
 def findORF(seq):
     orflen=0
@@ -43,8 +43,7 @@ def findORF(seq):
     length=len(seq)
     seq=[seq]
     seq=preprocessing.pad_sequences(seq,maxlen=length,padding='post')
-    #seq=(np.arange(seq.max()+1) == seq[:,:,None]).astype(dtype='float32')
-    seq=(np.arange(5) == seq[:,:,None]).astype(dtype='float32')
+    seq=(np.arange(seq.max()+1) == seq[:,:,None]).astype(dtype='float32')
     seq=np.delete(seq,0,axis=-1)
     for frame in range(3):
         tseq=stopmodel.predict(seq[:,frame:])[:,:(length-frame)//3]
@@ -74,7 +73,7 @@ def batchfindORF(seqs):
         orf=np.concatenate([2*np.ones(o_s),orf,2*np.ones(length-o_e)],axis=0)
         batches.append(orf)
     
-    batches=np.array(batches,dtype=object)
+    batches=np.array(batches, dtype=object)
     return batches
 
 def bucket_generator_ORF(X,Y,batchsize):
@@ -169,7 +168,7 @@ def readfile(filename):
     
     for s in sl:
         id=s.id
-        seq=str(s.seq).upper()
+        seq=str(s.seq)
         ids.append(id)
         seqs.append(seq)
     
@@ -180,7 +179,7 @@ def seqtodata(seqs):
     for seq in seqs:
         X.append(ctable.encode(seq))
     
-    X=np.array(X,dtype=object)
+    X=np.array(X, dtype=object)
     return X
 
 ctable = preprocessing.CharacterTable(chars)
@@ -200,20 +199,7 @@ def predict(infile,outfile):
     g=open(outfile,'w')
     
     for i in range(numseq):
-        try:
-            g.write(ids[i]+'\t'+str(len(seqs[i]))+'\t'+str(Y_predicted[i,1]-Y_predicted[i,0])+'\n')
-        except:
-            print("Error in index:" + str(i))
-            print("lenght")
-            print(len(ids))
-            print(len(seqs))
-            print(Y_predicted.shape)
-            print(Y_predicted)
-            
-            print(type(ids[i]))
-            print(type(seqs[i]))
-            print(type(Y_predicted[i,1]))
-            print(type(Y_predicted[i,0]))
+        g.write(ids[i]+'\t'+str(len(seqs[i]))+'\t'+str(Y_predicted[i,1]-Y_predicted[i,0])+'\n')
     
     g.close()
     print("Prediction complete: total", str(len(Y_predicted)), " sequences")
@@ -231,28 +217,29 @@ def nn():
     orf_ratio=Lambda(lambda x: K.sum(x,axis=-1),output_shape=lambda s: (s[0],s[1]))(rnn_input)
     orf_ratio=Lambda(lambda x: orfref/(K.sum(x,axis=-1,keepdims=True)+1),output_shape=lambda s: (s[0],1))(orf_ratio)
     # orf_ratio=merge([orf_size,orf_ratio],mode='dot')
-    # orf_ratio=keras.layers.merge.Dot([orf_size,orf_ratio])
     orf_ratio=dot([orf_size,orf_ratio], axes=1)
         
     orf_in=Masking()(orf_input)
     rnn_in=Masking()(rnn_input)
     
-    orf_in=RNN(hidden,return_sequences=True,consume_less='gpu')(orf_in)
-    rnn_in=RNN(hidden,return_sequences=True,consume_less='gpu')(rnn_in)
+    # orf_in=RNN(hidden,return_sequences=True,consume_less='gpu')(orf_in)
+    orf_in  =RNN(hidden,return_sequences=True,implementation=2)(orf_in)
+    # rnn_in=RNN(hidden,return_sequences=True,consume_less='gpu')(rnn_in)
+    rnn_in  =RNN(hidden,return_sequences=True,implementation=2)(rnn_in)
         
     # rnn_in=merge([orf_in,rnn_in],mode='concat')
-    # rnn_in=keras.layers.merge.Concatenate([orf_in,rnn_in])
     rnn_in=concatenate([orf_in,rnn_in])
-    rnn_in=RNN(hidden,return_sequences=False,consume_less='gpu') (rnn_in)
+    # rnn_in=RNN(hidden,return_sequences=False,consume_less='gpu')(rnn_in)
+    rnn_in=RNN(hidden,return_sequences=False,implementation=2)(rnn_in)
     rnn_in=Dropout(dropout)(rnn_in)
         
     # rnn_in=merge([rnn_in,orf_size,orf_ratio],mode='concat')
-    # rnn_in=keras.layers.merge.Concatenate([rnn_in,orf_size,orf_ratio])
     rnn_in=concatenate([rnn_in,orf_size,orf_ratio])
     rnn_out=Dense(outD)(rnn_in)
     rnn_act=Activation('softmax')(rnn_out)
     
-    model=Model(input=[rnn_input,orf_input],output=rnn_act)
+    # model=Model(input=[rnn_input,orf_input],output=rnn_act)
+    model=Model(inputs=[rnn_input,orf_input],outputs=rnn_act)
     
     model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
     #model.summary()

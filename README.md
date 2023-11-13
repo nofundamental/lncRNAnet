@@ -30,3 +30,25 @@ Fasta file
 ```
 $ ./code/lncRNAnet.py input.fasta output.txt
 ```
+
+## IMPORTANT
+
+Create and activate conda environment.
+This makes it easier to manage dependencies, including GPU dependencies.
+
+```bash
+conda env create -f lncRNAnet_env.yml --prefix ./lncRNAnet_env
+conda activate ./lncRNAnet_env
+```
+
+and to run:
+
+```bash
+python ./code/lncRNAnet.py input.fasta output.txt
+```
+
+Run to nohup:
+
+```bash
+nohup python ./code/lncRNAnet.py input.fasta output.txt &> nohup.log &
+```
